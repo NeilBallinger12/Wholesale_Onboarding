@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+}
+
+/* Override Arc Columns inner top/bottom padding */
+.arc-Columns-inner {
+  padding-top: 36px !important;
+  padding-bottom: 36px !important;
+}

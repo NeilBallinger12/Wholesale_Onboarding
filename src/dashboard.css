@@ -1,0 +1,277 @@
+/* =============================================================
+   BT Wholesale Dashboard — component overrides & utilities
+   ============================================================= */
+
+/* ---- Arc Columns inner padding override ---- */
+.arc-Columns-inner {
+  padding-top: 36px !important;
+  padding-bottom: 36px !important;
+}
+
+/* ---- Card base ---- */
+.btw-card {
+  background: var(--btw-color-surface-white);
+  border-radius: var(--btw-radius-card);
+  padding: var(--btw-space-card-pad);
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.btw-card--neutral {
+  background: var(--btw-color-surface-neutral);
+}
+
+.btw-card--border {
+  border: 1px solid var(--btw-color-border-neutral);
+}
+
+.btw-card--brand-border {
+  border: 2px solid var(--btw-color-brand-primary);
+}
+
+/* ---- Badge overrides ---- */
+.btw-badge--enabled .arc-Badge {
+  background: var(--btw-color-badge-enabled-bg) !important;
+  color: var(--btw-color-badge-enabled-text) !important;
+}
+
+.btw-badge--locked .arc-Badge {
+  background: var(--btw-color-badge-locked-bg) !important;
+  color: var(--btw-color-badge-locked-text) !important;
+}
+
+/* ---- Icon circle ---- */
+.btw-icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--btw-color-surface-neutral);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btw-icon-circle--brand {
+  background: rgba(85, 20, 180, 0.1);
+}
+
+/* ---- Search bar ---- */
+.btw-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border: 2px solid var(--btw-color-brand-primary);
+  border-radius: var(--btw-radius-search);
+  background: var(--btw-color-surface-white);
+  cursor: pointer;
+  min-width: 200px;
+  flex: 1;
+  max-width: 268px;
+}
+
+.btw-search input {
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--btw-color-text-muted);
+  background: transparent;
+  width: 100%;
+  font-family: inherit;
+}
+
+/* ---- Section wrapper matching Arc Extended grid (max 1920px, 96px margins at 1440px) ---- */
+.btw-page-section {
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 0 96px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1439px) {
+  .btw-page-section {
+    padding: 0 64px;
+  }
+}
+
+@media (max-width: 1279px) {
+  .btw-page-section {
+    padding: 0 48px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .btw-page-section {
+    padding: 0 32px;
+  }
+}
+
+@media (max-width: 767px) {
+  .btw-page-section {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 635px) {
+  .btw-page-section {
+    padding: 0 16px;
+  }
+  :root {
+    --btw-space-card-pad: 16px;
+    --btw-space-card-gap: 16px;
+    --btw-radius-card: 24px;
+  }
+}
+
+/* ---- Card grid ---- */
+.btw-card-grid {
+  display: grid;
+  gap: var(--btw-space-card-gap);
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1024px) {
+  .btw-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 636px) {
+  .btw-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btw-card-grid--3 {
+  display: grid;
+  gap: var(--btw-space-card-gap);
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1024px) {
+  .btw-card-grid--3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 636px) {
+  .btw-card-grid--3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Two column layout ---- */
+.btw-two-col {
+  display: grid;
+  gap: var(--btw-space-card-gap);
+  grid-template-columns: 1fr 2fr;
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  .btw-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Carousel dots ---- */
+.btw-carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 0 0;
+}
+
+.btw-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--btw-color-border-neutral);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.btw-carousel-dot--active {
+  width: 18px;
+  height: 8px;
+  border-radius: 24px;
+  background: var(--btw-color-brand-primary);
+}
+
+/* ---- Filter tag pill ---- */
+.btw-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 16px;
+  border-radius: 32px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  border: 1px solid #d4bfec;
+  background: white;
+  color: var(--btw-color-brand-primary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.btw-filter-pill--active {
+  background: var(--btw-color-brand-primary);
+  color: white;
+  border-color: var(--btw-color-brand-primary);
+}
+
+/* ---- Nav active underline ---- */
+.btw-nav-item--active {
+  position: relative;
+}
+
+.btw-nav-item--active::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 18px;
+  right: 18px;
+  height: 3px;
+  background: var(--btw-color-brand-primary);
+  border-radius: 4px 4px 0 0;
+}
+
+/* ---- Illustration placeholder ---- */
+.btw-illustration {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8d5f5 0%, #c4a0e8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .btw-illustration {
+    display: none;
+  }
+}
+
+/* ---- Page background ---- */
+.btw-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--btw-color-surface-white);
+}
+
+/* ---- Section vertical rhythm ---- */
+.btw-section {
+  padding-top: var(--btw-space-section-v);
+  padding-bottom: var(--btw-space-section-v);
+}
+
+.btw-section--neutral {
+  background: var(--btw-color-surface-neutral);
+}

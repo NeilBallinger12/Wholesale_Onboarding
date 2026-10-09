@@ -1,0 +1,27 @@
+{
+  "name": "unified-onboarding-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@arc-ui/components": "^13.13.0",
+    "@arc-ui/icons": "^13.13.0",
+    "@arc-ui/themes": "^13.13.0",
+    "@arc-ui/tokens-arc": "^13.13.0",
+    "@arc-ui/tokens-bt-enterprise": "^13.13.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "5.6.3",
+    "vite": "^6.4.3"
+  }
+}

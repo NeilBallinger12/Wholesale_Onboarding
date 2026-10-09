@@ -1,0 +1,32 @@
+/* =============================================================
+   BT Wholesale Dashboard — project-level design tokens
+   Values derived from Figma file 94igywuSrNE8MS7voFh77M
+   ============================================================= */
+:root {
+  /* Colour — from Figma tokens */
+  --btw-color-brand-primary: #5514b4;
+  --btw-color-text-primary: #2a2a2a;
+  --btw-color-text-secondary: #434343;
+  --btw-color-text-muted: #6b6b6b;
+  --btw-color-surface-white: #ffffff;
+  --btw-color-surface-neutral: #f7f7f7;
+  --btw-color-border-neutral: #d9d9d9;
+  --btw-color-border-mid: #c8c8c8;
+  --btw-color-badge-enabled-bg: #e6f4e5;
+  --btw-color-badge-enabled-text: #036c01;
+  --btw-color-badge-locked-bg: #f0f0f0;
+  --btw-color-badge-locked-text: #2a2a2a;
+  --btw-color-error: #da020f;
+
+  /* Radii — from Figma */
+  --btw-radius-card: 32px;
+  --btw-radius-card-sm: 24px;
+  --btw-radius-badge: 1000px;
+  --btw-radius-btn: 32px;
+  --btw-radius-search: 40px;
+
+  /* Spacing */
+  --btw-space-section-v: 48px;
+  --btw-space-card-pad: 32px;
+  --btw-space-card-gap: 32px;
+}
