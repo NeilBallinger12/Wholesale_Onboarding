@@ -5,7 +5,7 @@ import { ButtonV2 } from "@arc-ui/components/ButtonV2";
 
 import tourScreenshot from "../assets/tour_screenshot.png";
 
-type TourStep = "frame1" | "frame2" | "hidden";
+type TourStep = "frame2" | "hidden";
 
 interface DashboardTourProps {
   /** Called when the tour is dismissed */
@@ -14,7 +14,6 @@ interface DashboardTourProps {
 
 export const DashboardTour = ({ onClose }: DashboardTourProps) => {
   const [step, setStep] = useState<TourStep>("hidden");
-  const [contentVisible, setContentVisible] = useState(true);
 
   // Lock body scroll when tour is active
   useEffect(() => {
@@ -25,25 +24,11 @@ export const DashboardTour = ({ onClose }: DashboardTourProps) => {
     };
   }, [step]);
 
-  // Show frame1 after 3 seconds
+  // Show frame2 after 3 seconds
   useEffect(() => {
-    const showTimer = setTimeout(() => setStep("frame1"), 3000);
+    const showTimer = setTimeout(() => setStep("frame2"), 3000);
     return () => clearTimeout(showTimer);
   }, []);
-
-  // Transition from frame1 to frame2 after 5 seconds
-  useEffect(() => {
-    if (step !== "frame1") return;
-    const fadeOut = setTimeout(() => setContentVisible(false), 4600);
-    const switchFrame = setTimeout(() => {
-      setStep("frame2");
-      setContentVisible(true);
-    }, 5000);
-    return () => {
-      clearTimeout(fadeOut);
-      clearTimeout(switchFrame);
-    };
-  }, [step]);
 
   if (step === "hidden") return null;
 
@@ -78,88 +63,13 @@ export const DashboardTour = ({ onClose }: DashboardTourProps) => {
           position: "relative",
         }}
       >
-        {/* Frame 2 always rendered to set the height */}
-        <div style={{ visibility: step === "frame2" ? "visible" : "hidden" }}>
-          <Frame2 onSkip={onClose} onStart={onClose} active={step === "frame2"} />
-        </div>
-
-        {/* Frame 1 absolutely overlays Frame 2, fades out on transition */}
-        {step === "frame1" && (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              padding: "56px",
-              boxSizing: "border-box",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "opacity 0.4s ease",
-              opacity: contentVisible ? 1 : 0,
-              borderRadius: "54px",
-              background: "#ffffff",
-            }}
-          >
-            <Frame1 />
-          </div>
-        )}
+        <Frame2 onSkip={onClose} onStart={onClose} active={step === "frame2"} />
       </div>
     </div>
   );
 };
 
 /* ── Frame 1: Large welcome splash ──────────────────────────── */
-const Frame1 = () => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: "46px",
-    }}
-  >
-    <div style={{ width: "205px", height: "205px" }}>
-      <BrandLogo size={205} />
-    </div>
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "28px",
-      }}
-    >
-      <h1
-        style={{
-          fontFamily: "BT Curve, sans-serif",
-          fontWeight: 500,
-          fontSize: "clamp(64px, 8vw, 120px)",
-          lineHeight: "1.13",
-          color: "#5514b4",
-          margin: 0,
-          textAlign: "center",
-        }}
-      >
-        Hey, John
-      </h1>
-      <p
-        style={{
-          fontFamily: "BT Curve, sans-serif",
-          fontWeight: 500,
-          fontSize: "28px",
-          lineHeight: "36px",
-          color: "#5514b4",
-          margin: 0,
-          textAlign: "center",
-          maxWidth: "407px",
-        }}
-      >
-        Thanks for choosing BT.
-      </p>
-    </div>
-  </div>
-);
-
 /* ── Staggered fade-in item ──────────────────────────────────── */
 interface FadeItemProps {
   /** Delay in ms before this element fades in */

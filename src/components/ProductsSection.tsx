@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Heading } from "@arc-ui/components/Heading";
 import { Text } from "@arc-ui/components/Text";
 import { VerticalSpace } from "@arc-ui/components/VerticalSpace";
@@ -10,7 +12,6 @@ import { BtIconLocked } from "@arc-ui/icons/BtIconLocked";
 import { BtIconBroadband } from "@arc-ui/icons/BtIconBroadband";
 import { BtIconEthernet } from "@arc-ui/icons/BtIconEthernet";
 import { BtIconGlobe } from "@arc-ui/icons/BtIconGlobe";
-import { BtIconArrowRight } from "@arc-ui/icons/BtIconArrowRight";
 
 import { type Product } from "../data/products";
 
@@ -23,44 +24,93 @@ interface ProductsSectionProps {
   onTrack: (product: Product) => void;
 }
 
-const lockedProducts = [
+const allProducts = [
+  {
+    id: "dv",
+    name: "Digital Voice",
+    desc: "Sell hosted voice and SIP to your end customers. 340 lines live.",
+    meta: "Contract signed · 12 Mar 2026\nOrdering, billing and faults active.",
+    icon: BtIconPhone,
+    enabled: true,
+    accessRequested: false,
+    blocker: "",
+    reused: "",
+  },
   {
     id: "broadband",
     name: "Broadband One",
     desc: "FTTP, SOGEA and FTTC access for your end customers.",
+    meta: "Needs: signed Broadband One schedule\nCredit check and billing already verified.",
+    icon: BtIconBroadband,
+    enabled: false,
+    accessRequested: false,
     blocker: "Needs: signed Broadband One schedule",
     reused: "Credit check and billing already verified.",
-    icon: BtIconBroadband,
-    accessRequested: false,
   },
   {
     id: "ethernet",
     name: "Ethernet",
     desc: "Point-to-point and backhaul circuits, 100Mb to 10Gb.",
+    meta: "Needs: schedule + technical accreditation\nCompany, credit and billing already verified.",
+    icon: BtIconEthernet,
+    enabled: false,
+    accessRequested: false,
     blocker: "Needs: schedule + technical accreditation",
     reused: "Company, credit and billing already verified.",
-    icon: BtIconEthernet,
-    accessRequested: false,
   },
   {
     id: "dia",
     name: "Dedicated internet access",
     desc: "DIA with committed bandwidth and SLAs.",
+    meta: "Needs: schedule + technical accreditation\nCompany, credit and billing already verified.",
+    icon: BtIconGlobe,
+    enabled: false,
+    accessRequested: false,
     blocker: "Needs: schedule + technical accreditation",
     reused: "Company, credit and billing already verified.",
-    icon: BtIconGlobe,
-    accessRequested: false,
   },
 ];
+
+/* ── Hover-border card wrapper ─────────────────────────────── */
+interface ProductCardProps {
+  children: React.ReactNode;
+  enabled?: boolean;
+}
+
+const ProductCard = ({ children, enabled }: ProductCardProps) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "var(--btw-color-surface-white)",
+        borderRadius: "var(--btw-radius-card)",
+        padding: "var(--btw-space-card-pad)",
+        height: "100%",
+        boxSizing: "border-box",
+        position: "relative",
+        border: hovered
+          ? "2px solid var(--btw-color-brand-primary)"
+          : enabled
+            ? "2px solid var(--btw-color-border-mid)"
+            : "1px solid var(--btw-color-border-mid)",
+        transition: "border-color 0.2s ease",
+        cursor: "default",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 export const ProductsSection = ({
   onOrder,
   onUnlock,
-  onTrack,
 }: ProductsSectionProps) => {
   return (
     <div className="btw-page-section btw-section">
-      {/* Section header */}
       <Heading level="2" size="l">
         Products you can sell
       </Heading>
@@ -73,83 +123,10 @@ export const ProductsSection = ({
 
       <VerticalSpace size="32" />
 
-      {/* Products grid */}
       <div className="btw-card-grid">
-        {/* Enabled: Digital Voice — 2px brand border */}
-        <div className="btw-card btw-card--brand-border" style={{ position: "relative" }}>
-          {/* Enabled badge positioned top-left */}
-          <div style={{ position: "absolute", top: "20px", left: "24px" }}>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                padding: "0 8px",
-                height: "24px",
-                borderRadius: "1000px",
-                background: "var(--btw-color-badge-enabled-bg)",
-                color: "var(--btw-color-badge-enabled-text)",
-                fontSize: "12px",
-                fontWeight: 500,
-                lineHeight: 1,
-              }}
-            >
-              Enabled
-            </span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-              marginTop: "32px",
-            }}
-          >
-            {/* Icon */}
-            <div className="btw-icon-circle btw-icon-circle--brand">
-              <Icon icon={BtIconPhone} size={24} />
-            </div>
-
-            {/* Text content */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <Heading level="3" size="s">
-                Digital Voice
-              </Heading>
-              <Text size="m" tone="supporting" elementType="p">
-                Sell hosted voice and SIP to your end customers. 340 lines live.
-              </Text>
-              <Text size="s" tone="muted" elementType="p">
-                Contract signed · 12 Mar 2026
-                <br />
-                Ordering, billing and faults active.
-              </Text>
-            </div>
-
-            <Rule />
-
-            {/* Actions */}
-            <div style={{ display: "flex", gap: "0" }}>
-              <ButtonV2
-                label="Order"
-                buttonStyle="primary"
-                size="m"
-                onClick={onOrder}
-                icon={BtIconArrowRight}
-                iconPosition="afterText"
-              />
-              <ButtonV2
-                label="See plans"
-                buttonStyle="tertiary"
-                size="m"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Locked products */}
-        {lockedProducts.map((product) => (
-          <div key={product.id} className="btw-card btw-card--border" style={{ position: "relative" }}>
-            {/* Not enabled badge */}
+        {allProducts.map((product) => (
+          <ProductCard key={product.id} enabled={product.enabled}>
+            {/* Badge */}
             <div style={{ position: "absolute", top: "20px", left: "24px" }}>
               <span
                 style={{
@@ -158,14 +135,22 @@ export const ProductsSection = ({
                   padding: "0 8px",
                   height: "24px",
                   borderRadius: "1000px",
-                  background: "var(--btw-color-badge-locked-bg)",
-                  color: "var(--btw-color-badge-locked-text)",
+                  background: product.enabled
+                    ? "var(--btw-color-badge-enabled-bg)"
+                    : "var(--btw-color-badge-locked-bg)",
+                  color: product.enabled
+                    ? "var(--btw-color-badge-enabled-text)"
+                    : "var(--btw-color-badge-locked-text)",
                   fontSize: "12px",
                   fontWeight: 500,
                   lineHeight: 1,
                 }}
               >
-                {product.accessRequested ? "Access requested" : "Not enabled"}
+                {product.enabled
+                  ? "Enabled"
+                  : product.accessRequested
+                    ? "Access requested"
+                    : "Not enabled"}
               </span>
             </div>
 
@@ -177,11 +162,20 @@ export const ProductsSection = ({
                 marginTop: "32px",
               }}
             >
-              <div className="btw-icon-circle">
-                <Icon icon={product.accessRequested ? product.icon : BtIconLocked} size={24} />
+              {/* Icon */}
+              <div
+                className={`btw-icon-circle${product.enabled ? " btw-icon-circle--brand" : ""}`}
+              >
+                <Icon
+                  icon={product.enabled ? product.icon : BtIconLocked}
+                  size={24}
+                />
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {/* Text */}
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+              >
                 <Heading level="3" size="s">
                   {product.name}
                 </Heading>
@@ -189,60 +183,52 @@ export const ProductsSection = ({
                   {product.desc}
                 </Text>
                 <Text size="s" tone="muted" elementType="p">
-                  {product.blocker}
-                  <br />
-                  {product.reused}
+                  {product.meta.split("\n").map((line, i) => (
+                    <span key={i}>
+                      {line}
+                      {i < product.meta.split("\n").length - 1 && <br />}
+                    </span>
+                  ))}
                 </Text>
               </div>
 
               <Rule />
 
-              <div style={{ display: "flex", gap: "0" }}>
-                {product.accessRequested ? (
-                  <ButtonV2
-                    label="Track request"
-                    buttonStyle="secondary"
-                    size="m"
-                    onClick={() =>
-                      onTrack({
+              {/* CTAs — same three for every card */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                <ButtonV2
+                  label="Unlock to sell"
+                  buttonStyle="secondary"
+                  size="s"
+                  onClick={() => {
+                    if (product.enabled) {
+                      onOrder();
+                    } else {
+                      onUnlock({
                         id: product.id,
                         name: product.name,
                         desc: product.desc,
-                        enabled: false,
+                        enabled: product.enabled,
                         blocker: product.blocker,
                         reused: product.reused,
-                        accessRequested: true,
-                      })
+                        accessRequested: product.accessRequested,
+                      });
                     }
-                  />
-                ) : (
-                  <>
-                    <ButtonV2
-                      label="Unlock to sell"
-                      buttonStyle="secondary"
-                      size="m"
-                      onClick={() =>
-                        onUnlock({
-                          id: product.id,
-                          name: product.name,
-                          desc: product.desc,
-                          enabled: false,
-                          blocker: product.blocker,
-                          reused: product.reused,
-                          accessRequested: false,
-                        })
-                      }
-                    />
-                    <ButtonV2
-                      label="Enquire"
-                      buttonStyle="tertiary"
-                      size="m"
-                    />
-                  </>
-                )}
+                  }}
+                />
+                <ButtonV2
+                  label="See plans"
+                  buttonStyle="tertiary"
+                  size="s"
+                />
+                <ButtonV2
+                  label="Enquire"
+                  buttonStyle="tertiary"
+                  size="s"
+                />
               </div>
             </div>
-          </div>
+          </ProductCard>
         ))}
       </div>
     </div>

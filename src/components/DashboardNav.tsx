@@ -22,6 +22,7 @@ export const DashboardNav = () => {
 
   return (
     <NavigationHeader
+      isFluid
       navItems={navItems}
       rightSlot={
         <NavigationHeaderActionBar>
