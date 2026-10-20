@@ -5,7 +5,12 @@ import { Icon } from "@arc-ui/components/Icon";
 
 import { BtIconSearch } from "@arc-ui/icons/BtIconSearch";
 
-export const PageHeader = () => {
+interface PageHeaderProps {
+  /** Billing account number — shown in subline once billing is set up */
+  billingAccountNumber?: string;
+}
+
+export const PageHeader = ({ billingAccountNumber }: PageHeaderProps) => {
   return (
     <div className="btw-page-section">
       <div
@@ -25,17 +30,31 @@ export const PageHeader = () => {
             Welcome John,
           </Heading>
           <VerticalSpace size="8" />
-          <Text size="l" elementType="p">
-            <span
-              style={{
-                fontFamily: "BT Curve, sans-serif",
-                fontWeight: 400,
-                color: "var(--btw-color-brand-primary)",
-              }}
-            >
-              Let's get Giacom set up and ready to trade.
-            </span>
-          </Text>
+          {billingAccountNumber ? (
+            <Text size="s" elementType="p">
+              <span
+                style={{
+                  fontFamily: "BT Curve, sans-serif",
+                  fontWeight: 400,
+                  color: "var(--btw-color-text-secondary)",
+                }}
+              >
+                Billing account: <strong>{billingAccountNumber}</strong>
+              </span>
+            </Text>
+          ) : (
+            <Text size="l" elementType="p">
+              <span
+                style={{
+                  fontFamily: "BT Curve, sans-serif",
+                  fontWeight: 400,
+                  color: "var(--btw-color-brand-primary)",
+                }}
+              >
+                Let's get Giacom set up and ready to trade.
+              </span>
+            </Text>
+          )}
         </div>
 
         {/* Right: search only */}

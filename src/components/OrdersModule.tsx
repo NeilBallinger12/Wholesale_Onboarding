@@ -35,9 +35,17 @@ const StatusRow = ({ color, label, count }: StatusRowProps) => (
           flexShrink: 0,
         }}
       />
-      <Text size="s" elementType="span">
-        <strong>{label}</strong>
-      </Text>
+      <span
+        style={{
+          fontFamily: "BT Curve Headline, BT Curve, sans-serif",
+          fontWeight: 400,
+          fontSize: "14px",
+          lineHeight: "20px",
+          color: "#2a2a2a",
+        }}
+      >
+        {label}
+      </span>
     </div>
     <Text size="s" tone="supporting">
       ({count})
@@ -48,33 +56,33 @@ const StatusRow = ({ color, label, count }: StatusRowProps) => (
 /* ── Empty donut placeholder ────────────────────────────────── */
 const EmptyDonut = () => (
   <svg
-    width="136"
-    height="136"
-    viewBox="0 0 136 136"
+    width="168"
+    height="168"
+    viewBox="0 0 168 168"
     aria-hidden="true"
   >
     <circle
-      cx="68"
-      cy="68"
-      r="50"
+      cx="84"
+      cy="84"
+      r="62"
       fill="none"
       stroke="#e8e8e8"
-      strokeWidth="20"
+      strokeWidth="22"
     />
     <text
-      x="68"
-      y="62"
+      x="84"
+      y="78"
       textAnchor="middle"
       fontFamily="BT Curve, sans-serif"
       fontWeight="500"
-      fontSize="28"
+      fontSize="32"
       fill="#2a2a2a"
     >
       0
     </text>
     <text
-      x="68"
-      y="80"
+      x="84"
+      y="98"
       textAnchor="middle"
       fontFamily="BT Curve, sans-serif"
       fontWeight="400"

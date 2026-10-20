@@ -47,19 +47,19 @@ const steps: Step[] = [
   },
   {
     num: 2,
-    title: "Approve Commercials",
-    desc: "Review and approve your commercial terms and pricing agreement.",
-    time: "10 mins",
-    icon: BtIconDocumentAndPencil,
+    title: "Add Billing Information",
+    desc: "Set up your billing account and payment preferences.",
+    time: "5 mins",
+    icon: BtIconCreditCard,
     locked: true,
     open: false,
   },
   {
     num: 3,
-    title: "Add Billing Information",
-    desc: "Set up your billing account and payment preferences.",
-    time: "5 mins",
-    icon: BtIconCreditCard,
+    title: "Approve Commercials",
+    desc: "Review and approve your commercial terms and pricing agreement.",
+    time: "10 mins",
+    icon: BtIconDocumentAndPencil,
     locked: true,
     open: false,
   },
@@ -333,19 +333,42 @@ const StepCard = ({ step, onClick, submitted }: StepCardProps) => {
 
 /* ── Main module ────────────────────────────────────────────── */
 interface WelcomeBTModuleProps {
-  /** Navigate to the Add Company Info page */
   onGoToCompanyInfo: () => void;
-  /** Whether company info has been submitted */
+  onGoToBilling: () => void;
+  onGoToBranding: () => void;
+  onGoToTeam: () => void;
+  onGoToCommercials: () => void;
   companyInfoSubmitted: boolean;
+  billingSubmitted: boolean;
+  brandingSubmitted: boolean;
+  teamSubmitted: boolean;
+  commercialsSubmitted: boolean;
 }
 
-export const WelcomeBTModule = ({ onGoToCompanyInfo, companyInfoSubmitted }: WelcomeBTModuleProps) => {
+export const WelcomeBTModule = ({ onGoToCompanyInfo, onGoToBilling, onGoToBranding, onGoToTeam, onGoToCommercials, companyInfoSubmitted, billingSubmitted, brandingSubmitted, teamSubmitted, commercialsSubmitted }: WelcomeBTModuleProps) => {
   const [page, setPage] = useState(0);
   const totalPages = Math.ceil(steps.length / CARDS_VISIBLE);
-  const completedSteps = companyInfoSubmitted ? 1 : 0;
+  const completedSteps =
+    (companyInfoSubmitted ? 1 : 0) +
+    (billingSubmitted ? 1 : 0) +
+    (brandingSubmitted ? 1 : 0) +
+    (teamSubmitted ? 1 : 0) +
+    (commercialsSubmitted ? 1 : 0);
   const progressPercent = Math.round((completedSteps / steps.length) * 100);
 
-  const visibleSteps = steps.slice(
+  // Unlock step 2 (Billing) once company info submitted
+  // Unlock step 3 (Approve Commercials) once billing submitted
+  // Unlock step 4 (team) once company info submitted
+  // Unlock step 5 (branding) once company info submitted
+  const resolvedSteps = steps.map((s) => {
+    if (s.num === 2) return { ...s, locked: !companyInfoSubmitted, open: companyInfoSubmitted && !billingSubmitted };
+    if (s.num === 3) return { ...s, locked: !billingSubmitted, open: billingSubmitted && !commercialsSubmitted };
+    if (s.num === 4) return { ...s, locked: !companyInfoSubmitted, open: companyInfoSubmitted && !teamSubmitted };
+    if (s.num === 5) return { ...s, locked: !companyInfoSubmitted, open: companyInfoSubmitted && !brandingSubmitted };
+    return s;
+  });
+
+  const visibleSteps = resolvedSteps.slice(
     page * CARDS_VISIBLE,
     page * CARDS_VISIBLE + CARDS_VISIBLE,
   );
@@ -430,7 +453,35 @@ export const WelcomeBTModule = ({ onGoToCompanyInfo, companyInfoSubmitted }: Wel
 
             <ProgressRing percent={progressPercent} />
 
-            {companyInfoSubmitted ? (
+            {brandingSubmitted ? (
+              <ButtonV2
+                label="Edit branding"
+                buttonStyle="secondary"
+                size="m"
+                onClick={onGoToBranding}
+              />
+            ) : commercialsSubmitted ? (
+              <ButtonV2
+                label="View agreement"
+                buttonStyle="secondary"
+                size="m"
+                onClick={onGoToCommercials}
+              />
+            ) : teamSubmitted ? (
+              <ButtonV2
+                label="Edit team"
+                buttonStyle="secondary"
+                size="m"
+                onClick={onGoToTeam}
+              />
+            ) : billingSubmitted ? (
+              <ButtonV2
+                label="Edit billing details"
+                buttonStyle="secondary"
+                size="m"
+                onClick={onGoToBilling}
+              />
+            ) : companyInfoSubmitted ? (
               <ButtonV2
                 label="Edit company information"
                 buttonStyle="secondary"
@@ -464,8 +515,21 @@ export const WelcomeBTModule = ({ onGoToCompanyInfo, companyInfoSubmitted }: Wel
                 <StepCard
                   key={step.num}
                   step={step}
-                  submitted={step.num === 1 && companyInfoSubmitted}
-                  onClick={step.num === 1 ? onGoToCompanyInfo : undefined}
+                  submitted={
+                    (step.num === 1 && companyInfoSubmitted) ||
+                    (step.num === 2 && billingSubmitted) ||
+                    (step.num === 3 && commercialsSubmitted) ||
+                    (step.num === 4 && teamSubmitted) ||
+                    (step.num === 5 && brandingSubmitted)
+                  }
+                  onClick={
+                    step.num === 1 ? onGoToCompanyInfo :
+                    step.num === 2 ? onGoToBilling :
+                    step.num === 3 ? onGoToCommercials :
+                    step.num === 4 ? onGoToTeam :
+                    step.num === 5 ? onGoToBranding :
+                    undefined
+                  }
                 />
               ))}
             </div>

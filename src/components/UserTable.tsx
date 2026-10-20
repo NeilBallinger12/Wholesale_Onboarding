@@ -8,55 +8,40 @@ import { Icon } from "@arc-ui/components/Icon";
 import { BtIconUserAdd } from "@arc-ui/icons/BtIconUserAdd";
 import { BtIconUserGroups } from "@arc-ui/icons/BtIconUserGroups";
 
-/* ── Types ──────────────────────────────────────────────────── */
-type UserRole = "Super admin" | "Admin" | "User";
-type UserStatus = "Active" | "Pending" | "Inactive";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  status: UserStatus;
-  added: string;
-}
-
-/* ── Sample data for the populated state (not used here) ─────── */
-export const sampleUsers: User[] = [
-  {
-    id: "1",
-    name: "Neil Ballinger",
-    email: "neil.ballinger@giacom.com",
-    role: "Super admin",
-    status: "Active",
-    added: "10 Mar 2026",
-  },
-  {
-    id: "2",
-    name: "Sarah Chen",
-    email: "sarah.chen@giacom.com",
-    role: "Admin",
-    status: "Active",
-    added: "12 Mar 2026",
-  },
-  {
-    id: "3",
-    name: "James Wright",
-    email: "james.wright@giacom.com",
-    role: "User",
-    status: "Pending",
-    added: "14 Mar 2026",
-  },
-];
+import { type TeamUser } from "./InviteUserDrawer";
 
 /* ── Status badge ───────────────────────────────────────────── */
-const statusColours: Record<UserStatus, { bg: string; text: string }> = {
+const statusColours: Record<string, { bg: string; text: string }> = {
   Active: { bg: "#e6f4e5", text: "#036c01" },
   Pending: { bg: "#fff8e1", text: "#7a4f00" },
   Inactive: { bg: "#f0f0f0", text: "#2a2a2a" },
 };
 
-const StatusBadge = ({ status }: { status: UserStatus }) => (
+const StatusBadge = ({ status }: { status: string }) => {
+  const colours = statusColours[status] ?? statusColours.Inactive;
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "0 8px",
+        height: "24px",
+        borderRadius: "1000px",
+        background: colours.bg,
+        color: colours.text,
+        fontSize: "12px",
+        fontWeight: 500,
+        lineHeight: 1,
+        whiteSpace: "nowrap",
+      }}
+    >
+      {status}
+    </span>
+  );
+};
+
+/* ── Profile badge ──────────────────────────────────────────── */
+const ProfileBadge = ({ type }: { type: "administrator" | "standard" }) => (
   <span
     style={{
       display: "inline-flex",
@@ -64,38 +49,25 @@ const StatusBadge = ({ status }: { status: UserStatus }) => (
       padding: "0 8px",
       height: "24px",
       borderRadius: "1000px",
-      background: statusColours[status].bg,
-      color: statusColours[status].text,
+      background: type === "administrator" ? "#f3eeff" : "#f0f0f0",
+      color: type === "administrator" ? "#5514b4" : "#2a2a2a",
       fontSize: "12px",
       fontWeight: 500,
       lineHeight: 1,
       whiteSpace: "nowrap",
     }}
   >
-    {status}
+    {type === "administrator" ? "Partner Admin" : "Standard User"}
   </span>
 );
 
-/* ── Role badge ─────────────────────────────────────────────── */
-const RoleBadge = ({ role }: { role: UserRole }) => (
-  <span
-    style={{
-      display: "inline-flex",
-      alignItems: "center",
-      padding: "0 8px",
-      height: "24px",
-      borderRadius: "1000px",
-      background: role === "Super admin" ? "#f3eeff" : "#f0f0f0",
-      color: role === "Super admin" ? "#5514b4" : "#2a2a2a",
-      fontSize: "12px",
-      fontWeight: 500,
-      lineHeight: 1,
-      whiteSpace: "nowrap",
-    }}
-  >
-    {role}
-  </span>
-);
+/* ── Capability label map ─────────────────────────────────────── */
+const capabilityLabels: Record<string, string> = {
+  "sales-ordering": "Sales & Ordering",
+  "service-operations": "Service Operations",
+  "billing-reporting": "Billing & Reporting",
+  "read-only": "Read only",
+};
 
 /* ── Table header cell ──────────────────────────────────────── */
 const Th = ({
@@ -140,23 +112,24 @@ const Td = ({ children }: { children: React.ReactNode }) => (
 );
 
 /* ── Populated table ────────────────────────────────────────── */
-const PopulatedTable = ({ users }: { users: User[] }) => (
+const PopulatedTable = ({ users }: { users: TeamUser[] }) => (
   <div style={{ overflowX: "auto", width: "100%" }}>
     <table
       style={{
         width: "100%",
         borderCollapse: "collapse",
-        tableLayout: "fixed",
+        tableLayout: "auto",
       }}
       aria-label="Organisation users"
     >
       <thead>
         <tr>
-          <Th width="25%">Name</Th>
-          <Th width="30%">Email</Th>
-          <Th width="18%">Role</Th>
-          <Th width="14%">Status</Th>
-          <Th width="13%">Date added</Th>
+          <Th width="22%">Name</Th>
+          <Th width="16%">Profile type</Th>
+          <Th width="24%">Role / Capabilities</Th>
+          <Th width="20%">Organisation</Th>
+          <Th width="12%">Status</Th>
+          <Th width="6%">Added</Th>
         </tr>
       </thead>
       <tbody>
@@ -191,26 +164,52 @@ const PopulatedTable = ({ users }: { users: User[] }) => (
                   }}
                   aria-hidden="true"
                 >
-                  {user.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .slice(0, 2)}
+                  {user.firstName[0]}{user.surname[0]}
                 </div>
-                <strong>{user.name}</strong>
+                <div>
+                  <div style={{ fontWeight: 600 }}>{user.firstName} {user.surname}</div>
+                  <div style={{ fontSize: "12px", color: "#6b6b6b" }}>{user.email}</div>
+                </div>
               </div>
             </Td>
             <Td>
-              <span style={{ color: "#434343" }}>{user.email}</span>
+              <ProfileBadge type={user.profileType} />
             </Td>
             <Td>
-              <RoleBadge role={user.role} />
+              {user.profileType === "administrator" ? (
+                <Text size="s" tone="supporting" elementType="span">Full access</Text>
+              ) : user.capabilities.length > 0 ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                  {user.capabilities.map((c) => (
+                    <span
+                      key={c}
+                      style={{
+                        display: "inline-flex",
+                        padding: "2px 8px",
+                        borderRadius: "1000px",
+                        background: "#f0f0f0",
+                        color: "#2a2a2a",
+                        fontSize: "11px",
+                        fontWeight: 500,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {capabilityLabels[c] ?? c}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <Text size="s" tone="muted" elementType="span">—</Text>
+              )}
+            </Td>
+            <Td>
+              <span style={{ color: "#434343" }}>{user.organisation}</span>
             </Td>
             <Td>
               <StatusBadge status={user.status} />
             </Td>
             <Td>
-              <span style={{ color: "#6b6b6b" }}>{user.added}</span>
+              <span style={{ color: "#6b6b6b", fontSize: "12px" }}>{user.added}</span>
             </Td>
           </tr>
         ))}
@@ -220,7 +219,7 @@ const PopulatedTable = ({ users }: { users: User[] }) => (
 );
 
 /* ── Empty state ────────────────────────────────────────────── */
-const EmptyState = () => (
+const EmptyState = ({ onInvite }: { onInvite?: () => void }) => (
   <div
     style={{
       display: "flex",
@@ -265,6 +264,7 @@ const EmptyState = () => (
       size="m"
       icon={BtIconUserAdd}
       iconPosition="beforeText"
+      onClick={onInvite}
     />
   </div>
 );
@@ -272,10 +272,12 @@ const EmptyState = () => (
 /* ── Main module ────────────────────────────────────────────── */
 interface UserTableProps {
   /** Pass populated users to show the table, omit for empty state */
-  users?: User[];
+  users?: TeamUser[];
+  /** Called when the user clicks the invite/add button */
+  onInvite?: () => void;
 }
 
-export const UserTable = ({ users }: UserTableProps) => {
+export const UserTable = ({ users, onInvite }: UserTableProps) => {
   const isEmpty = !users || users.length === 0;
 
   return (
@@ -322,6 +324,7 @@ export const UserTable = ({ users }: UserTableProps) => {
               size="m"
               icon={BtIconUserAdd}
               iconPosition="beforeText"
+              onClick={onInvite}
             />
           )}
         </div>
@@ -329,7 +332,7 @@ export const UserTable = ({ users }: UserTableProps) => {
         <Rule />
 
         {/* Content */}
-        {isEmpty ? <EmptyState /> : <PopulatedTable users={users!} />}
+        {isEmpty ? <EmptyState onInvite={onInvite} /> : <PopulatedTable users={users!} />}
       </div>
 
       <VerticalSpace size="48" />

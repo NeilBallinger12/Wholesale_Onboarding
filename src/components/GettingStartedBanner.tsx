@@ -8,8 +8,6 @@ import { Icon } from "@arc-ui/components/Icon";
 
 import { BtIconCrossAlt } from "@arc-ui/icons/BtIconCrossAlt";
 
-import headerIllustration from "../assets/illustration.svg";
-
 export const GettingStartedBanner = () => {
   const [dismissed, setDismissed] = useState(false);
 
@@ -17,7 +15,6 @@ export const GettingStartedBanner = () => {
 
   return (
     <div className="btw-page-section">
-      {/* Card: Surface white, 1px border neutral, 32px radius — matches Figma EL-22daccb3 */}
       <div
         className="btw-card btw-card--border"
         style={{
@@ -28,17 +25,70 @@ export const GettingStartedBanner = () => {
           flexWrap: "wrap",
         }}
       >
-        {/* Illustration */}
-        <div
-          style={{ width: "130px", height: "130px", flexShrink: 0 }}
-          aria-hidden="true"
+        {/* Video thumbnail with play button */}
+        <button
+          aria-label="Watch the Getting to know BT Wholesale video"
+          style={{
+            width: "160px",
+            height: "100px",
+            borderRadius: "12px",
+            background: "linear-gradient(135deg, #2a1c4a 0%, #5514b4 100%)",
+            flexShrink: 0,
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+            overflow: "hidden",
+          }}
         >
-          <img
-            src={headerIllustration}
-            alt=""
-            style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          {/* Subtle grid overlay for video feel */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage:
+                "repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(255,255,255,0.04) 14px, rgba(255,255,255,0.04) 15px), repeating-linear-gradient(90deg, transparent, transparent 14px, rgba(255,255,255,0.04) 14px, rgba(255,255,255,0.04) 15px)",
+              pointerEvents: "none",
+            }}
           />
-        </div>
+          {/* Play button circle */}
+          <div
+            style={{
+              width: "44px",
+              height: "44px",
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.92)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
+            }}
+          >
+            {/* SVG play triangle */}
+            <svg width="16" height="18" viewBox="0 0 16 18" fill="none" aria-hidden="true">
+              <path d="M2 1.5L14 9L2 16.5V1.5Z" fill="#5514b4" />
+            </svg>
+          </div>
+          {/* Duration label */}
+          <span
+            style={{
+              position: "absolute",
+              bottom: "8px",
+              right: "10px",
+              fontFamily: "BT Curve, sans-serif",
+              fontSize: "11px",
+              fontWeight: 600,
+              color: "#ffffff",
+              background: "rgba(0,0,0,0.5)",
+              padding: "1px 5px",
+              borderRadius: "3px",
+            }}
+          >
+            3:42
+          </span>
+        </button>
 
         {/* Text content */}
         <div style={{ flex: "1 1 300px", minWidth: 0 }}>
@@ -47,17 +97,16 @@ export const GettingStartedBanner = () => {
           </Heading>
           <VerticalSpace size="8" />
           <Text size="m" tone="supporting" elementType="p">
-            We've put together a starter pack to help you find your way around
-            your account — from placing orders to helping your team market BT
-            products to your customers.
+            Watch a short introduction to your new portal — from placing orders to helping your
+            team market BT products to your customers.
           </Text>
           <VerticalSpace size="16" />
           <Link href="#" size="m">
-            Get the starter pack
+            Watch the overview video
           </Link>
         </div>
 
-        {/* Dismiss button */}
+        {/* Dismiss */}
         <button
           onClick={() => setDismissed(true)}
           aria-label="Dismiss banner"

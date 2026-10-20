@@ -22,6 +22,8 @@ interface ProductsSectionProps {
   onUnlock: (product: Product) => void;
   /** Open the pending-request tracker */
   onTrack: (product: Product) => void;
+  /** Whether commercials have been signed — unlocks DV 'Start ordering' primary CTA */
+  commercialsSubmitted?: boolean;
 }
 
 const allProducts = [
@@ -108,6 +110,7 @@ const ProductCard = ({ children, enabled }: ProductCardProps) => {
 export const ProductsSection = ({
   onOrder,
   onUnlock,
+  commercialsSubmitted,
 }: ProductsSectionProps) => {
   return (
     <div className="btw-page-section btw-section">
@@ -121,7 +124,7 @@ export const ProductsSection = ({
         company, credit and billing details.
       </Text>
 
-      <VerticalSpace size="32" />
+      <VerticalSpace size="40" />
 
       <div className="btw-card-grid">
         {allProducts.map((product) => (
@@ -196,26 +199,35 @@ export const ProductsSection = ({
 
               {/* CTAs — same three for every card */}
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                <ButtonV2
-                  label="Unlock to sell"
-                  buttonStyle="secondary"
-                  size="s"
-                  onClick={() => {
-                    if (product.enabled) {
-                      onOrder();
-                    } else {
-                      onUnlock({
-                        id: product.id,
-                        name: product.name,
-                        desc: product.desc,
-                        enabled: product.enabled,
-                        blocker: product.blocker,
-                        reused: product.reused,
-                        accessRequested: product.accessRequested,
-                      });
-                    }
-                  }}
-                />
+                {product.id === "dv" && commercialsSubmitted ? (
+                  <ButtonV2
+                    label="Start ordering"
+                    buttonStyle="primary"
+                    size="s"
+                    onClick={onOrder}
+                  />
+                ) : (
+                  <ButtonV2
+                    label={product.enabled ? "Order now" : "Unlock to sell"}
+                    buttonStyle="secondary"
+                    size="s"
+                    onClick={() => {
+                      if (product.enabled) {
+                        onOrder();
+                      } else {
+                        onUnlock({
+                          id: product.id,
+                          name: product.name,
+                          desc: product.desc,
+                          enabled: product.enabled,
+                          blocker: product.blocker,
+                          reused: product.reused,
+                          accessRequested: product.accessRequested,
+                        });
+                      }
+                    }}
+                  />
+                )}
                 <ButtonV2
                   label="See plans"
                   buttonStyle="tertiary"
