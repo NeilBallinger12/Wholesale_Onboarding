@@ -97,8 +97,7 @@ export const DashboardPage = ({
       });
       setCommercialToastOpen(true);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [billingSubmitted, commercialNotifKey]);
+  }, [billingSubmitted, commercialNotifKey, commercialsSubmitted]);
 
   // When a team user is invited, add notification
   const prevTeamUsersLenRef = useRef(teamUsers.length);

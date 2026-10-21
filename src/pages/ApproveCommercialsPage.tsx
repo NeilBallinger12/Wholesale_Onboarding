@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 
 import {
   NavigationHeader,
@@ -288,6 +288,10 @@ export const ApproveCommercialsPage = ({
 }: ApproveCommercialsPageProps) => {
   const [pageState, setPageState] = useState<PageState>("form");
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
+  // Stable memoized callback — prevents SignatureCapture's TypeMode loop
+  const handleSignatureChange = useCallback((dataUrl: string | null) => {
+    setSignatureDataUrl(dataUrl);
+  }, []);
   const [signatureError, setSignatureError] = useState<string | undefined>();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [termsError, setTermsError] = useState(false);
@@ -545,7 +549,7 @@ export const ApproveCommercialsPage = ({
                   </div>
 
                   <SignatureCapture
-                    onChange={setSignatureDataUrl}
+                    onChange={handleSignatureChange}
                     value={signatureDataUrl}
                     error={signatureError}
                   />

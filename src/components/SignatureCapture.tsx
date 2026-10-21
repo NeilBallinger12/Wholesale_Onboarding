@@ -215,25 +215,26 @@ const TypeMode = ({
   const [text, setText] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const renderToCanvas = useCallback(
-    (value: string) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!value.trim()) {
-        onChange(null);
-        return;
-      }
-      ctx.font = `52px ${TYPED_FONT}`;
-      ctx.fillStyle = "#1a1a1a";
-      ctx.textBaseline = "middle";
-      ctx.fillText(value, 24, canvas.height / 2);
-      onChange(canvas.toDataURL("image/png"));
-    },
-    [onChange],
-  );
+  // Keep a stable ref to onChange so renderToCanvas never needs it as a dep
+  const onChangeRef = useRef(onChange);
+  useEffect(() => { onChangeRef.current = onChange; });
+
+  const renderToCanvas = useCallback((value: string) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!value.trim()) {
+      onChangeRef.current(null);
+      return;
+    }
+    ctx.font = `52px ${TYPED_FONT}`;
+    ctx.fillStyle = "#1a1a1a";
+    ctx.textBaseline = "middle";
+    ctx.fillText(value, 24, canvas.height / 2);
+    onChangeRef.current(canvas.toDataURL("image/png"));
+  }, []); // stable — no deps that change on every render
 
   useEffect(() => {
     renderToCanvas(text);
@@ -443,8 +444,6 @@ export const SignatureCapture = ({
 }: SignatureCaptureProps) => {
   const [mode, setMode] = useState<SignatureMode>("draw");
 
-  const handleChange = (dataUrl: string | null) => onChange(dataUrl);
-
   return (
     <div
       style={{
@@ -516,9 +515,9 @@ export const SignatureCapture = ({
 
       {/* Mode content */}
       <div style={{ padding: "20px" }}>
-        {mode === "draw" && <DrawMode onChange={handleChange} />}
-        {mode === "type" && <TypeMode onChange={handleChange} />}
-        {mode === "upload" && <UploadMode onChange={handleChange} />}
+        {mode === "draw" && <DrawMode onChange={onChange} />}
+        {mode === "type" && <TypeMode onChange={onChange} />}
+        {mode === "upload" && <UploadMode onChange={onChange} />}
       </div>
 
       {/* Preview strip — shown when a signature exists */}
