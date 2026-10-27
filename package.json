@@ -14,6 +14,7 @@
     "@arc-ui/themes": "^13.13.0",
     "@arc-ui/tokens-arc": "^13.13.0",
     "@arc-ui/tokens-bt-enterprise": "^13.13.0",
+    "gsap": "^3.15.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },

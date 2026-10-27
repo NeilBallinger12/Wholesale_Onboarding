@@ -14,7 +14,7 @@ import { DashboardFooter } from "../components/DashboardFooter";
 import { OrderModal } from "../components/OrderModal";
 import { LockedModal, PendingModal } from "../components/LockedModal";
 import { DashboardToast } from "../components/DashboardToast";
-import { DashboardTour } from "../components/DashboardTour";
+import { WelcomeOverlay } from "../components/WelcomeOverlay";
 import { OrdersModule } from "../components/OrdersModule";
 import { TrainingModule } from "../components/TrainingModule";
 import { UserTable } from "../components/UserTable";
@@ -57,7 +57,6 @@ export const DashboardPage = ({
   teamUsers,
   teamSubmitted,
   brandLogoUrl,
-  skipTour,
   onTourSeen,
   commercialNotifKey = 0,
 }: DashboardPageProps) => {
@@ -65,7 +64,7 @@ export const DashboardPage = ({
   const [orderModalOpen, setOrderModalOpen] = useState(false);
   const [lockedProduct, setLockedProduct] = useState<Product | null>(null);
   const [pendingProduct, setPendingProduct] = useState<Product | null>(null);
-  const [tourVisible, setTourVisible] = useState(!skipTour);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   // Notifications state
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
@@ -203,7 +202,7 @@ export const DashboardPage = ({
       />
 
       <main style={{ flex: 1 }}>
-        <PageHeader billingAccountNumber={billingAccountNumber} />
+        <PageHeader billingAccountNumber={billingAccountNumber} onOpenWelcome={() => setWelcomeOpen(true)} />
 
         <WelcomeBTModule
           onGoToCompanyInfo={onGoToCompanyInfo}
@@ -269,12 +268,14 @@ export const DashboardPage = ({
         onClose={() => setPendingProduct(null)}
       />
 
-      {tourVisible && (
-        <DashboardTour onClose={() => {
-          setTourVisible(false);
+      {/* Welcome overlay — shown on first visit or via Welcome button */}
+      <WelcomeOverlay
+        isOpen={welcomeOpen}
+        onClose={() => {
+          setWelcomeOpen(false);
           onTourSeen?.();
-        }} />
-      )}
+        }}
+      />
     </div>
   );
 };

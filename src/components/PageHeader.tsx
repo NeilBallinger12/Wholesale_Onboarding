@@ -1,6 +1,7 @@
 import { Heading } from "@arc-ui/components/Heading";
 import { Text } from "@arc-ui/components/Text";
 import { VerticalSpace } from "@arc-ui/components/VerticalSpace";
+import { ButtonV2 } from "@arc-ui/components/ButtonV2";
 import { Icon } from "@arc-ui/components/Icon";
 
 import { BtIconSearch } from "@arc-ui/icons/BtIconSearch";
@@ -8,9 +9,11 @@ import { BtIconSearch } from "@arc-ui/icons/BtIconSearch";
 interface PageHeaderProps {
   /** Billing account number — shown in subline once billing is set up */
   billingAccountNumber?: string;
+  /** Called when the Welcome tour button is clicked */
+  onOpenWelcome?: () => void;
 }
 
-export const PageHeader = ({ billingAccountNumber }: PageHeaderProps) => {
+export const PageHeader = ({ billingAccountNumber, onOpenWelcome }: PageHeaderProps) => {
   return (
     <div className="btw-page-section">
       <div
@@ -54,6 +57,19 @@ export const PageHeader = ({ billingAccountNumber }: PageHeaderProps) => {
                 Let's get Giacom set up and ready to trade.
               </span>
             </Text>
+          )}
+
+          {/* Welcome tour button */}
+          {onOpenWelcome && (
+            <>
+              <VerticalSpace size="16" />
+              <ButtonV2
+                label="Welcome, start your tour"
+                buttonStyle="secondary"
+                size="m"
+                onClick={onOpenWelcome}
+              />
+            </>
           )}
         </div>
 
