@@ -529,7 +529,7 @@ export const InviteUserDrawer = ({
                 </Text>
               </div>
 
-              <FormControl requirementStatus="required" label="First name" htmlFor="invite-first-name">
+              <FormControl requirementStatus="not-applicable" label="First name" htmlFor="invite-first-name">
                 <TextInput
                   id="invite-first-name"
                   label=""
@@ -538,7 +538,7 @@ export const InviteUserDrawer = ({
                 />
               </FormControl>
 
-              <FormControl requirementStatus="required" label="Surname" htmlFor="invite-surname">
+              <FormControl requirementStatus="not-applicable" label="Surname" htmlFor="invite-surname">
                 <TextInput
                   id="invite-surname"
                   label=""
@@ -547,7 +547,7 @@ export const InviteUserDrawer = ({
                 />
               </FormControl>
 
-              <FormControl requirementStatus="required" label="Email address" htmlFor="invite-email">
+              <FormControl requirementStatus="not-applicable" label="Email address" htmlFor="invite-email">
                 <TextInput
                   id="invite-email"
                   label=""
@@ -556,7 +556,7 @@ export const InviteUserDrawer = ({
                 />
               </FormControl>
 
-              <FormControl requirementStatus="required" label="Phone number" htmlFor="invite-phone">
+              <FormControl requirementStatus="not-applicable" label="Phone number" htmlFor="invite-phone">
                 <TextInput
                   id="invite-phone"
                   label=""
@@ -565,7 +565,7 @@ export const InviteUserDrawer = ({
                 />
               </FormControl>
 
-              <FormControl requirementStatus="required" label="Organisation" htmlFor="invite-organisation">
+              <FormControl requirementStatus="not-applicable" label="Organisation" htmlFor="invite-organisation">
                 <TextInput
                   id="invite-organisation"
                   label=""

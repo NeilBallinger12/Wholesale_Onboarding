@@ -30,12 +30,12 @@ const allProducts = [
   {
     id: "dv",
     name: "Digital Voice",
-    desc: "Sell hosted voice and SIP to your end customers. 340 lines live.",
-    meta: "Contract signed · 12 Mar 2026\nOrdering, billing and faults active.",
+    desc: "Sell hosted voice and SIP to your end customers.",
+    meta: "Sign your commercial agreement to start ordering.\nBilling and faults will activate once approved.",
     icon: BtIconPhone,
-    enabled: true,
+    enabled: false,
     accessRequested: false,
-    blocker: "",
+    blocker: "Needs: signed commercial agreement",
     reused: "",
   },
   {
@@ -127,8 +127,14 @@ export const ProductsSection = ({
       <VerticalSpace size="40" />
 
       <div className="btw-card-grid">
-        {allProducts.map((product) => (
-          <ProductCard key={product.id} enabled={product.enabled}>
+        {allProducts.map((product) => {
+          // DV becomes enabled once commercials are signed
+          const isEnabled = product.id === "dv"
+            ? !!commercialsSubmitted
+            : product.enabled;
+
+          return (
+          <ProductCard key={product.id} enabled={isEnabled}>
             {/* Badge */}
             <div style={{ position: "absolute", top: "20px", left: "24px" }}>
               <span
@@ -138,10 +144,10 @@ export const ProductsSection = ({
                   padding: "0 8px",
                   height: "24px",
                   borderRadius: "1000px",
-                  background: product.enabled
+                  background: isEnabled
                     ? "var(--btw-color-badge-enabled-bg)"
                     : "var(--btw-color-badge-locked-bg)",
-                  color: product.enabled
+                  color: isEnabled
                     ? "var(--btw-color-badge-enabled-text)"
                     : "var(--btw-color-badge-locked-text)",
                   fontSize: "12px",
@@ -149,7 +155,7 @@ export const ProductsSection = ({
                   lineHeight: 1,
                 }}
               >
-                {product.enabled
+                {isEnabled
                   ? "Enabled"
                   : product.accessRequested
                     ? "Access requested"
@@ -167,10 +173,10 @@ export const ProductsSection = ({
             >
               {/* Icon */}
               <div
-                className={`btw-icon-circle${product.enabled ? " btw-icon-circle--brand" : ""}`}
+                className={`btw-icon-circle${isEnabled ? " btw-icon-circle--brand" : ""}`}
               >
                 <Icon
-                  icon={product.enabled ? product.icon : BtIconLocked}
+                  icon={isEnabled ? product.icon : BtIconLocked}
                   size={24}
                 />
               </div>
@@ -186,10 +192,13 @@ export const ProductsSection = ({
                   {product.desc}
                 </Text>
                 <Text size="s" tone="muted" elementType="p">
-                  {product.meta.split("\n").map((line, i) => (
+                  {(product.id === "dv" && commercialsSubmitted
+                    ? "Contract signed · Ordering, billing and faults active."
+                    : product.meta
+                  ).split("\n").map((line, i, arr) => (
                     <span key={i}>
                       {line}
-                      {i < product.meta.split("\n").length - 1 && <br />}
+                      {i < arr.length - 1 && <br />}
                     </span>
                   ))}
                 </Text>
@@ -197,7 +206,7 @@ export const ProductsSection = ({
 
               <Rule />
 
-              {/* CTAs — same three for every card */}
+              {/* CTAs */}
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                 {product.id === "dv" && commercialsSubmitted ? (
                   <ButtonV2
@@ -208,18 +217,18 @@ export const ProductsSection = ({
                   />
                 ) : (
                   <ButtonV2
-                    label={product.enabled ? "Order now" : "Unlock to sell"}
+                    label="Unlock to sell"
                     buttonStyle="secondary"
                     size="s"
                     onClick={() => {
-                      if (product.enabled) {
+                      if (isEnabled) {
                         onOrder();
                       } else {
                         onUnlock({
                           id: product.id,
                           name: product.name,
                           desc: product.desc,
-                          enabled: product.enabled,
+                          enabled: isEnabled,
                           blocker: product.blocker,
                           reused: product.reused,
                           accessRequested: product.accessRequested,
@@ -228,20 +237,13 @@ export const ProductsSection = ({
                     }}
                   />
                 )}
-                <ButtonV2
-                  label="See plans"
-                  buttonStyle="tertiary"
-                  size="s"
-                />
-                <ButtonV2
-                  label="Enquire"
-                  buttonStyle="tertiary"
-                  size="s"
-                />
+                <ButtonV2 label="See plans" buttonStyle="tertiary" size="s" />
+                <ButtonV2 label="Enquire" buttonStyle="tertiary" size="s" />
               </div>
             </div>
           </ProductCard>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

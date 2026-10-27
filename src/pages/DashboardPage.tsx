@@ -70,10 +70,15 @@ export const DashboardPage = ({
   // Notifications state
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [commercialToastOpen, setCommercialToastOpen] = useState(false);
+  const [billingCreatedToastOpen, setBillingCreatedToastOpen] = useState(false);
 
   // Stable ref for onGoToCommercials to avoid stale closure in notification
   const onGoToCommercialsRef = useRef(onGoToCommercials);
   useEffect(() => { onGoToCommercialsRef.current = onGoToCommercials; });
+
+  // Stable ref for onGoToBilling
+  const onGoToBillingRef = useRef(onGoToBilling);
+  useEffect(() => { onGoToBillingRef.current = onGoToBilling; });
 
   // When billing is submitted OR prototype nav triggers it, inject notification + toast
   useEffect(() => {
@@ -98,6 +103,31 @@ export const DashboardPage = ({
       setCommercialToastOpen(true);
     }
   }, [billingSubmitted, commercialNotifKey, commercialsSubmitted]);
+
+  // When commercials are approved, notify user that their billing account is active
+  useEffect(() => {
+    if (commercialsSubmitted) {
+      setNotifications((prev) => {
+        const alreadyExists = prev.some((n) => n.id === "notif-billing-active");
+        if (alreadyExists) return prev;
+        return [
+          {
+            id: "notif-billing-active",
+            title: "Your billing account is now active",
+            body: `Billing account ${billingAccountNumber || "BTA-830241"} has been created. You can now view your invoices and account details.`,
+            timestamp: "Just now",
+            read: false,
+            type: "success" as const,
+            actionLabel: "View billing details",
+            onAction: () => onGoToBillingRef.current(),
+          },
+          ...prev,
+        ];
+      });
+      setBillingCreatedToastOpen(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [commercialsSubmitted]);
 
   // When a team user is invited, add notification
   const prevTeamUsersLenRef = useRef(teamUsers.length);
@@ -145,6 +175,24 @@ export const DashboardPage = ({
           onClick: () => {
             setCommercialToastOpen(false);
             onGoToCommercialsRef.current();
+          },
+        }}
+      />
+
+      {/* Commercials approved — billing account created toast */}
+      <ToastNotification
+        title="Your billing account has been created"
+        isOpen={billingCreatedToastOpen}
+        onOpenChange={(open) => {
+          setBillingCreatedToastOpen(open);
+        }}
+        status="success"
+        isCloseButtonVisible
+        link={{
+          text: "View now",
+          onClick: () => {
+            setBillingCreatedToastOpen(false);
+            onGoToBillingRef.current();
           },
         }}
       />

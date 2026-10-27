@@ -338,7 +338,7 @@ const ColourPicker = ({ label, description, value, isDisabled, error, onChange }
 
         {/* Hex text input */}
         <div style={{ flex: 1 }}>
-          <FormControl requirementStatus="required" label="Hex code" htmlFor={`hex-${label}`} errorMessage={error}>
+          <FormControl requirementStatus="not-applicable" label="Hex code" htmlFor={`hex-${label}`} errorMessage={error}>
             <TextInput
               label=""
               id={`hex-${label}`}

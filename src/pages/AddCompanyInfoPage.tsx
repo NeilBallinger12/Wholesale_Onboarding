@@ -369,7 +369,7 @@ const FormView = ({ form, errors, onChange, isLoading }: FormViewProps) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       {/* 1: Registered name */}
       <div style={{ maxWidth: "500px" }}>
-        <FormControl requirementStatus="required"
+        <FormControl requirementStatus="not-applicable"
           label="Registered company name"
           htmlFor="registeredName"
           helper="The official registered name of your company as it appears on Companies House."
@@ -386,7 +386,7 @@ const FormView = ({ form, errors, onChange, isLoading }: FormViewProps) => (
 
       {/* 2: Trading name */}
       <div style={{ maxWidth: "500px" }}>
-        <FormControl requirementStatus="required"
+        <FormControl requirementStatus="not-applicable"
           label="Trading name"
           htmlFor="tradingName"
           helper="If your business trades under a different name, enter it here."
@@ -402,7 +402,7 @@ const FormView = ({ form, errors, onChange, isLoading }: FormViewProps) => (
 
       {/* 3: Company registration number */}
       <div style={{ maxWidth: "500px" }}>
-        <FormControl requirementStatus="required"
+        <FormControl requirementStatus="not-applicable"
           label="Company registration number"
           htmlFor="companyNumber"
           helper={
@@ -430,7 +430,7 @@ const FormView = ({ form, errors, onChange, isLoading }: FormViewProps) => (
 
       {/* 4: VAT number */}
       <div style={{ maxWidth: "500px" }}>
-        <FormControl requirementStatus="required"
+        <FormControl requirementStatus="not-applicable"
           label="VAT number"
           htmlFor="vatNumber"
           helper="Your 9-digit VAT registration number, e.g. GB 123456789."
@@ -456,7 +456,7 @@ const FormView = ({ form, errors, onChange, isLoading }: FormViewProps) => (
       </div>
 
       <div style={{ maxWidth: "500px" }}>
-        <FormControl requirementStatus="required"
+        <FormControl requirementStatus="not-applicable"
           label="Address line 1"
           htmlFor="addressLine1"
           errorMessage={errors.addressLine1}
@@ -471,7 +471,7 @@ const FormView = ({ form, errors, onChange, isLoading }: FormViewProps) => (
       </div>
 
       <div style={{ maxWidth: "500px" }}>
-        <FormControl requirementStatus="required"
+        <FormControl requirementStatus="not-applicable"
           label="Address line 2"
           htmlFor="addressLine2"
         >
@@ -486,7 +486,7 @@ const FormView = ({ form, errors, onChange, isLoading }: FormViewProps) => (
 
       <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", maxWidth: "500px" }}>
         <div style={{ flex: "1 1 160px" }}>
-          <FormControl requirementStatus="required"
+          <FormControl requirementStatus="not-applicable"
             label="Town / city"
             htmlFor="addressCity"
             errorMessage={errors.addressCity}
@@ -500,7 +500,7 @@ const FormView = ({ form, errors, onChange, isLoading }: FormViewProps) => (
           </FormControl>
         </div>
         <div style={{ flex: "1 1 100px" }}>
-          <FormControl requirementStatus="required"
+          <FormControl requirementStatus="not-applicable"
             label="Postcode"
             htmlFor="addressPostcode"
             errorMessage={errors.addressPostcode}

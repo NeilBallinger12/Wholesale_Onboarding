@@ -123,7 +123,7 @@ const ContactForm = ({
 
     {/* Contact name */}
     <div style={{ maxWidth: "500px" }}>
-      <FormControl requirementStatus="required"
+      <FormControl requirementStatus="not-applicable"
         label="Contact name"
         htmlFor={`contactName-${contact.id}`}
         errorMessage={errors.contactName}
@@ -140,7 +140,7 @@ const ContactForm = ({
 
     {/* Phone number */}
     <div style={{ maxWidth: "500px" }}>
-      <FormControl requirementStatus="required"
+      <FormControl requirementStatus="not-applicable"
         label="Phone number"
         htmlFor={`phoneNumber-${contact.id}`}
         errorMessage={errors.phoneNumber}
@@ -170,7 +170,7 @@ const ContactForm = ({
     <div style={{ maxWidth: "500px" }}>
       <div style={{ display: "flex", gap: "12px", alignItems: "flex-end" }}>
         <div style={{ flex: 1 }}>
-          <FormControl requirementStatus="required"
+          <FormControl requirementStatus="not-applicable"
             label="Postcode lookup"
             htmlFor={`postcodeInput-${contact.id}`}
             helper="Enter your postcode and click Find Address"
@@ -197,7 +197,7 @@ const ContactForm = ({
 
     {/* Address fields */}
     <div style={{ maxWidth: "500px" }}>
-      <FormControl requirementStatus="required"
+      <FormControl requirementStatus="not-applicable"
         label="Building number & street"
         htmlFor={`buildingStreet-${contact.id}`}
         errorMessage={errors.buildingStreet}
@@ -214,7 +214,7 @@ const ContactForm = ({
 
     <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", maxWidth: "500px" }}>
       <div style={{ flex: "1 1 180px" }}>
-        <FormControl requirementStatus="required"
+        <FormControl requirementStatus="not-applicable"
           label="Town"
           htmlFor={`town-${contact.id}`}
           errorMessage={errors.town}
@@ -229,7 +229,7 @@ const ContactForm = ({
         </FormControl>
       </div>
       <div style={{ flex: "1 1 180px" }}>
-        <FormControl requirementStatus="required"
+        <FormControl requirementStatus="not-applicable"
           label="County"
           htmlFor={`county-${contact.id}`}
         >
@@ -245,7 +245,7 @@ const ContactForm = ({
     </div>
 
     <div style={{ maxWidth: "200px" }}>
-      <FormControl requirementStatus="required"
+      <FormControl requirementStatus="not-applicable"
         label="Postcode"
         htmlFor={`postcode-${contact.id}`}
         errorMessage={errors.postcode}
@@ -267,10 +267,12 @@ const SubmittedView = ({
   contacts,
   accountNumber,
   onEdit,
+  onDone,
 }: {
   contacts: BillingContact[];
   accountNumber: string;
   onEdit: () => void;
+  onDone: () => void;
 }) => (
   <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
@@ -281,7 +283,10 @@ const SubmittedView = ({
           <Text size="s" tone="supporting">Account number: <strong>{accountNumber}</strong></Text>
         </div>
       </div>
-      <ButtonV2 label="Edit billing details" buttonStyle="secondary" size="m" onClick={onEdit} />
+      <div style={{ display: "flex", gap: "8px" }}>
+        <ButtonV2 label="Edit billing details" buttonStyle="secondary" size="m" onClick={onEdit} />
+        <ButtonV2 label="Back to dashboard" buttonStyle="primary" size="m" icon={BtIconArrowRight} iconPosition="afterText" onClick={onDone} />
+      </div>
     </div>
 
     <Alert
@@ -382,8 +387,7 @@ export const AddBillingPage = ({ onBack, onSubmitted }: AddBillingPageProps) => 
     setTimeout(() => {
       setAccountNumber(generated);
       setPageState("submitted");
-      onSubmitted(generated);
-    }, 5000);
+    }, 3000);
   };
 
   return (
@@ -442,7 +446,7 @@ export const AddBillingPage = ({ onBack, onSubmitted }: AddBillingPageProps) => 
             display: "flex", flexDirection: "column", gap: "40px", boxSizing: "border-box",
           }}>
             {pageState === "submitted" ? (
-              <SubmittedView contacts={contacts} accountNumber={accountNumber} onEdit={() => setPageState("form")} />
+              <SubmittedView contacts={contacts} accountNumber={accountNumber} onEdit={() => setPageState("form")} onDone={() => onSubmitted(accountNumber)} />
             ) : (
               <>
                 {/* Form heading */}
