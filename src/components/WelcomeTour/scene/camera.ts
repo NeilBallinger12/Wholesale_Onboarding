@@ -1,20 +1,23 @@
-import { r2, type Iso, type V3 } from './svg';
+/* =========================================================
+   Camera: each scene SVG's viewBox is the camera.
+   Fits a box (svg units) into the "subject area" of the stage:
+   the right 58% on desktop, the lower half on narrow containers,
+   so subjects never sit under the copy.
+   ========================================================= */
+import { Iso, r2, P3 } from './iso';
 
-/** Width (px) of the component at which it switches to the stacked mobile layout. */
-export const MOBILE_BREAKPOINT = 760;
+export const NARROW = 760;   // container width (px) at which the layout stacks
 
-/**
- * Returns a viewBox that fits a world-space box (bw × bh, in projected SVG units) around `pt`
- * into the "subject area" of the stage: the right side on desktop, the lower part on mobile,
- * so the subject never sits under the copy. `centred` puts it in the middle instead.
- */
-export function cam(stage: HTMLElement, iso: Iso, pt: V3, bw: number, bh: number, centred = false): string {
-  const W = stage.clientWidth || 1, H = stage.clientHeight || 1, r = H / W;
-  const m = W <= MOBILE_BREAKPOINT;
-  const fracW = m ? 0.95 : 0.58, fracH = m ? 0.52 : 0.86;
-  const fx = centred ? 0.5 : m ? 0.5 : 0.69;
-  const fy = centred ? 0.5 : m ? 0.7 : 0.5;
-  const [cx, cy] = iso.P(...pt);
-  const w = Math.max(bw / fracW, bh / (fracH * r)), h = w * r;
-  return `${r2(cx - w * fx)} ${r2(cy - h * fy)} ${r2(w)} ${r2(h)}`;
+export function makeCamera(stage: HTMLElement) {
+  const size = () => [stage.clientWidth || 1, stage.clientHeight || 1] as const;
+  const isNarrow = () => size()[0] <= NARROW;
+  function camXY(cx: number, cy: number, bw: number, bh: number, centred = false) {
+    const [W, H] = size(), r = H / W, m = isNarrow();
+    const fracW = m ? 0.95 : 0.58, fracH = m ? 0.52 : 0.86;
+    const fx = centred ? 0.5 : (m ? 0.5 : 0.69), fy = centred ? 0.5 : (m ? 0.7 : 0.5);
+    const w = Math.max(bw / fracW, bh / (fracH * r)), h = w * r;
+    return `${r2(cx - w * fx)} ${r2(cy - h * fy)} ${r2(w)} ${r2(h)}`;
+  }
+  const cam = (iso: Iso, pt: P3, bw: number, bh: number, centred = false) => { const [cx, cy] = iso.P(...pt); return camXY(cx, cy, bw, bh, centred); };
+  return { size, isNarrow, camXY, cam };
 }

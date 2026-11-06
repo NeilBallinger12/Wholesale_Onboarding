@@ -338,6 +338,7 @@ interface WelcomeBTModuleProps {
   onGoToBranding: () => void;
   onGoToTeam: () => void;
   onGoToCommercials: () => void;
+  onGoToTraining: () => void;
   companyInfoSubmitted: boolean;
   billingSubmitted: boolean;
   brandingSubmitted: boolean;
@@ -345,7 +346,7 @@ interface WelcomeBTModuleProps {
   commercialsSubmitted: boolean;
 }
 
-export const WelcomeBTModule = ({ onGoToCompanyInfo, onGoToBilling, onGoToBranding, onGoToTeam, onGoToCommercials, companyInfoSubmitted, billingSubmitted, brandingSubmitted, teamSubmitted, commercialsSubmitted }: WelcomeBTModuleProps) => {
+export const WelcomeBTModule = ({ onGoToCompanyInfo, onGoToBilling, onGoToBranding, onGoToTeam, onGoToCommercials, onGoToTraining, companyInfoSubmitted, billingSubmitted, brandingSubmitted, teamSubmitted, commercialsSubmitted }: WelcomeBTModuleProps) => {
   const [page, setPage] = useState(0);
   const totalPages = Math.ceil(steps.length / CARDS_VISIBLE);
   const completedSteps =
@@ -528,6 +529,7 @@ export const WelcomeBTModule = ({ onGoToCompanyInfo, onGoToBilling, onGoToBrandi
                     step.num === 3 ? onGoToCommercials :
                     step.num === 4 ? onGoToTeam :
                     step.num === 5 ? onGoToBranding :
+                    step.num === 6 ? onGoToTraining :
                     undefined
                   }
                 />

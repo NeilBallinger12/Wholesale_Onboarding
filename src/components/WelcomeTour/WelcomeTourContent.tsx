@@ -1,18 +1,50 @@
 'use client';
 
-import { useEffect, useId, useRef } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { BrandLogo } from '@arc-ui/components/BrandLogo';
-import { ButtonV2 } from '@arc-ui/components/ButtonV2';
 import { initWelcomeTour, prefersReducedMotion } from './animations';
 import './WelcomeTour.css';
 
+export type TourDestination = 'order' | 'orders' | 'billing' | 'inventory' | 'training';
+
 export interface WelcomeTourContentProps {
+  /** Called by "Skip tour", and after a destination card is chosen (once onNavigate has run) */
   onComplete: () => void;
+  /** Called when the user picks one of the "Ready to explore?" cards. Route here (e.g. router.push). */
+  onNavigate?: (destination: TourDestination) => void;
+  /** User's first name for "Hey {name}," */
   userName?: string;
 }
 
-export function WelcomeTourContent({ onComplete, userName }: WelcomeTourContentProps) {
+const CARDS: { key: TourDestination; label: string; micro: string; primary?: boolean; icon: ReactNode }[] = [
+  { key: 'order', label: 'Order a service', micro: 'Place a new order for any customer', primary: true,
+    icon: <><rect x="3.5" y="3.5" width="17" height="17" rx="4" /><path className="ic-v" d="M12 8v8" /><path d="M8 12h8" /></> },
+  { key: 'orders', label: 'View orders', micro: 'Check progress across your network',
+    icon: <><circle className="ic-d" cx="5" cy="7" r="1.6" /><circle className="ic-d" cx="5" cy="12" r="1.6" /><circle className="ic-d" cx="5" cy="17" r="1.6" /><path d="M9 7h11M9 12h11M9 17h11" /></> },
+  { key: 'billing', label: 'View billing', micro: 'Invoices, statements and payments',
+    icon: <><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" /><path className="ic-r" d="M9 8h6M9 12h6M9 16h3" /></> },
+  { key: 'inventory', label: 'My inventory', micro: 'Everything your customers have active',
+    icon: <><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.2" /><rect x="13" y="13" width="7.5" height="7.5" rx="1.2" /><rect className="ic-b" x="8.25" y="3.5" width="7.5" height="7.5" rx="1.2" /></> },
+  { key: 'training', label: 'Training', micro: 'Guides and courses to get the most from the portal',
+    icon: <><circle cx="12" cy="12" r="8.5" /><path className="ic-p" d="M10.4 8.6l5 3.4-5 3.4z" /></> },
+];
+
+const NET_BLOCKS = [
+  { k: 'm', eyebrow: 'Manage', h: 'Your whole network, in one place', p: 'Manage your sub-resellers and their end customers from a single portal, with no switching between systems and no gaps in the picture.' },
+  { k: 't', eyebrow: 'Track orders', h: 'See every order, wherever it sits', p: 'Follow every order across your sub-resellers and end customers in real time, from placed to provisioned to complete.' },
+  { k: 'i', eyebrow: 'Raise issues', h: 'Raise issues with complete clarity', p: 'Raise issues against any product or service and see exactly where things stand, with full visibility from first report to resolution.' },
+  { k: 'e', eyebrow: 'Get started', h: 'Ready to explore?', p: 'Jump straight into the parts of the portal you’ll use most.' },
+];
+
+/**
+ * Scroll-driven welcome tour.
+ *
+ * The component is its own scroll container and fills its parent, so the parent must have a
+ * definite height (e.g. a full-screen modal, or a `position: fixed; inset: 0` wrapper).
+ */
+export function WelcomeTourContent({ onComplete, onNavigate, userName }: WelcomeTourContentProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const tourRef = useRef<HTMLElement>(null);
   const uid = 'wt' + useId().replace(/[^a-zA-Z0-9_-]/g, '');
 
@@ -21,103 +53,94 @@ export function WelcomeTourContent({ onComplete, userName }: WelcomeTourContentP
     if (!root) return;
     let cleanup: (() => void) | undefined;
     let cancelled = false;
+    // SplitText needs the final font metrics, so wait for web fonts before building.
     const fontsReady = document.fonts?.ready ?? Promise.resolve();
-    fontsReady.then(() => {
-      if (!cancelled) cleanup = initWelcomeTour(root, uid);
-    });
-    return () => {
-      cancelled = true;
-      cleanup?.();
-    };
+    fontsReady.then(() => { if (!cancelled) cleanup = initWelcomeTour(root, uid); });
+    return () => { cancelled = true; cleanup?.(); };
   }, [uid]);
 
   const startTour = () => {
-    const root = rootRef.current, tour = tourRef.current;
-    if (root && tour) root.scrollTo({ top: tour.offsetTop, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    const scroller = scrollerRef.current, tour = tourRef.current;
+    if (scroller && tour) scroller.scrollTo({ top: tour.offsetTop, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
   };
-
-  const name = userName?.trim();
+  const choose = (d: TourDestination) => { onNavigate?.(d); onComplete(); };
 
   return (
-    <div ref={rootRef} className="wt-root" role="region" aria-label="Welcome to Wholesale tour">
-      {/* Progress indicator — right side */}
-      <div className="wt-progress" data-wt="progress">
-        <div className="wt-progressTrack">
-          <div className="wt-progressFill" data-wt="progressFill" />
-        </div>
-      </div>
+    <div className="wt-root" ref={rootRef}>
+      <header className="wt-brandbar">
+        <div className="wt-logo" aria-hidden="true"><BrandLogo size={36} /></div>
+        <span className="wt-brandTitle">Welcome to Wholesale</span>
+        <button className="wt-skip" type="button" onClick={onComplete}>Skip tour</button>
+      </header>
 
-      <div className="wt-bar">
-        <div className="wt-barInner">
-          <span className="wt-brandTitle" data-wt="brandTitle" aria-hidden="true">Welcome to Wholesale</span>
-          <button type="button" className="wt-close" onClick={onComplete}>
-            Skip tour
-            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" /></svg>
-          </button>
-        </div>
-      </div>
-
-      {/* Part 1 — welcome + map */}
-      <section className="wt-p1" data-wt="p1">
-        <div className="wt-sticky">
-          <div className="wt-intro">
+      <div className="wt-scroller" ref={scrollerRef}>
+        {/* PART 1 — welcome + UK map */}
+        <section className="wt-p1" aria-label="Welcome">
+          <div className="wt-sticky wt-intro">
             <div className="wt-introCopy">
-              <div className="wt-exit" data-wt="introLogo" style={{ marginBottom: '8px' }}>
-                <BrandLogo size={108} />
-              </div>
-              <div className="wt-exit"><p className="wt-hey" data-wt="hey">Hey {name || 'there'},</p></div>
-              <div data-wt="exitHead"><h1 className="wt-welcome" data-wt="welcome">Welcome to Wholesale</h1></div>
+              <div className="wt-exit"><p className="wt-hey">Hey {userName?.trim() || 'there'},</p></div>
+              <div className="wt-exitHead"><h1 className="wt-welcome">Welcome to Wholesale</h1></div>
               <div className="wt-exit">
-                <div className="wt-cta" data-wt="cta">
-                  <p className="wt-tagline" data-wt="tagline">Powering connectivity and security for 800,000 businesses across the UK.</p>
-                  <div data-wt="startBtn">
-                    <ButtonV2
-                      label="Start tour"
-                      buttonStyle="primary"
-                      size="m"
-                      onClick={startTour}
-                    />
-                  </div>
+                <div className="wt-cta">
+                  <p className="wt-tagline">Powering connectivity and security</p>
+                  <button className="wt-startBtn" type="button" onClick={startTour}>Start tour</button>
                 </div>
               </div>
             </div>
-            <div className="wt-mapWrap wt-exit">
-              <svg className="wt-map" data-wt="map" role="img" aria-label="Map of the UK with businesses rising up across it" />
+            <div className="wt-mapWrap">
+              <svg className="wt-map wt-mapSvg" role="img" aria-label="Map of the UK with businesses rising up across it" />
             </div>
+            <p className="wt-scrollHint">Scroll to explore <span aria-hidden="true">↓</span></p>
           </div>
-          <p className="wt-scrollHint" data-wt="scrollHint" aria-hidden="true">Scroll to explore <span>↓</span></p>
-        </div>
-      </section>
+        </section>
 
-      {/* Parts 2–4 — street, router, office */}
-      <section className="wt-p2" data-wt="p2" ref={tourRef} aria-label="Product tour">
-        <div className="wt-sticky">
-          <div className="wt-stage" data-wt="stage">
-            <svg className="wt-scene" data-wt="street" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
-            <svg className="wt-scene wt-office" data-wt="office" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
-          </div>
-          <div className="wt-copy wt-copyBg">
-            <div className="wt-stack">
-              <h2 data-wt="t1">Sell and serve connectivity for your customers</h2>
-              <h2 data-wt="t2">Help customers connect</h2>
+        {/* PARTS 2–4 — map zoom → street → cable → router → office */}
+        <section className="wt-p2" ref={tourRef} aria-label="Product tour">
+          <div className="wt-sticky">
+            <div className="wt-stage">
+              <svg className="wt-street" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+              <svg className="wt-office" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+              <svg className="wt-mapZoom wt-mapSvg" preserveAspectRatio="xMinYMin meet" aria-hidden="true" />
+              <div className="wt-stageFade" />
             </div>
-            <div className="wt-stack">
-              <p className="wt-subHeadline" data-wt="s1">Whether dedicated internet access…</p>
-              <p className="wt-subHeadline" data-wt="s2">Connect customers and colleagues through Digital Voice</p>
-            </div>
-            <div className="wt-finish" data-wt="finish">
-              <ButtonV2
-                label="Get started"
-                buttonStyle="primary"
-                size="m"
-                onClick={onComplete}
-              />
+            <div className="wt-copy">
+              <div className="wt-copyInner">
+                <div className="wt-headBlock">
+                  <h2 className="wt-t1">Sell and serve connectivity for your customers</h2>
+                  <h2 className="wt-s1">Whether dedicated internet access…</h2>
+                  <h2 className="wt-t2">Help your customers connect with their customers, through Digital Voice for Business</h2>
+                  <h2 className="wt-s2">or business-grade, fast broadband</h2>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* PARTS 5–8 — network diagram → link cards */}
+        <section className="wt-p3" aria-label="What you can do in the portal">
+          <div className="wt-sticky">
+            <div className="wt-netWrap">
+              <svg className="wt-netSvg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Diagram of your account, your sub-resellers and their end customers" />
+              <div className="wt-cards">
+                {CARDS.map(c => (
+                  <button key={c.key} className={'wt-card' + (c.primary ? ' is-primary' : '')} type="button" onClick={() => choose(c.key)}>
+                    <span className="wt-ci"><svg viewBox="0 0 24 24" aria-hidden="true">{c.icon}</svg></span>
+                    <span className="wt-ct"><span className="wt-cl">{c.label}</span><span className="wt-cm">{c.micro}</span></span>
+                    <span className="wt-ca" aria-hidden="true">→</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="wt-netCopy">
+              {NET_BLOCKS.map(b => (
+                <div className="wt-nb" data-k={b.k} key={b.k}>
+                  <span className="wt-eyebrow">{b.eyebrow}</span><h2>{b.h}</h2><p>{b.p}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
-
-export default WelcomeTourContent;

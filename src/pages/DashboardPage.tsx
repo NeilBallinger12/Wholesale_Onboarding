@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { ToastNotification } from "@arc-ui/components/Toast";
+import { Toast, ToastNotification } from "@arc-ui/components/Toast";
 
 import { DashboardNav, type AppNotification } from "../components/DashboardNav";
 import { PageHeader } from "../components/PageHeader";
@@ -99,7 +99,8 @@ export const DashboardPage = ({
           ...prev,
         ];
       });
-      setCommercialToastOpen(true);
+      // Defer toast to avoid Arc render crash on mount
+      setTimeout(() => setCommercialToastOpen(true), 300);
     }
   }, [billingSubmitted, commercialNotifKey, commercialsSubmitted]);
 
@@ -123,7 +124,8 @@ export const DashboardPage = ({
           ...prev,
         ];
       });
-      setBillingCreatedToastOpen(true);
+      // Defer toast to avoid Arc render crash on mount
+      setTimeout(() => setBillingCreatedToastOpen(true), 300);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commercialsSubmitted]);
@@ -160,41 +162,45 @@ export const DashboardPage = ({
         }}
       />
 
-      {/* Billing-submitted commercial agreement toast */}
-      <ToastNotification
-        title="Your commercial agreement is ready to review"
-        isOpen={commercialToastOpen}
-        onOpenChange={(open) => {
-          setCommercialToastOpen(open);
-        }}
-        status="general"
-        isCloseButtonVisible
-        link={{
-          text: "View commercial information",
-          onClick: () => {
-            setCommercialToastOpen(false);
-            onGoToCommercialsRef.current();
-          },
-        }}
-      />
-
-      {/* Commercials approved — billing account created toast */}
-      <ToastNotification
-        title="Your billing account has been created"
-        isOpen={billingCreatedToastOpen}
-        onOpenChange={(open) => {
-          setBillingCreatedToastOpen(open);
-        }}
-        status="success"
-        isCloseButtonVisible
-        link={{
-          text: "View now",
-          onClick: () => {
-            setBillingCreatedToastOpen(false);
-            onGoToBillingRef.current();
-          },
-        }}
-      />
+      {/* Billing-submitted commercial agreement toast — only mount when needed */}
+      <Toast>
+        {commercialToastOpen && (
+          <ToastNotification
+            title="Your commercial agreement is ready to review"
+            isOpen
+            onOpenChange={(open) => {
+              if (!open) setCommercialToastOpen(false);
+            }}
+            status="general"
+            isCloseButtonVisible
+            link={{
+              text: "View commercial information",
+              onClick: () => {
+                setCommercialToastOpen(false);
+                onGoToCommercialsRef.current();
+              },
+            }}
+          />
+        )}
+        {billingCreatedToastOpen && (
+          <ToastNotification
+            title="Your billing account has been created"
+            isOpen
+            onOpenChange={(open) => {
+              if (!open) setBillingCreatedToastOpen(false);
+            }}
+            status="success"
+            isCloseButtonVisible
+            link={{
+              text: "View now",
+              onClick: () => {
+                setBillingCreatedToastOpen(false);
+                onGoToBillingRef.current();
+              },
+            }}
+          />
+        )}
+      </Toast>
 
       <DashboardToast
         isOpen={toastVisible}
@@ -210,6 +216,9 @@ export const DashboardPage = ({
           onGoToBranding={onGoToBranding}
           onGoToTeam={onGoToTeam}
           onGoToCommercials={onGoToCommercials}
+          onGoToTraining={() => {
+            document.getElementById("training-section")?.scrollIntoView({ behavior: "smooth" });
+          }}
           companyInfoSubmitted={companyInfoSubmitted}
           billingSubmitted={billingSubmitted}
           brandingSubmitted={brandingSubmitted}
@@ -230,12 +239,14 @@ export const DashboardPage = ({
 
         <OrdersModule />
 
-        <TrainingModule
+        <div id="training-section">
+          <TrainingModule
           companyInfoSubmitted={companyInfoSubmitted}
           commercialsSubmitted={commercialsSubmitted}
           billingSubmitted={billingSubmitted}
           teamSubmitted={teamSubmitted}
         />
+        </div>
 
         <UpdatesAndBriefings />
 

@@ -12,8 +12,6 @@ import { VerticalSpace } from "@arc-ui/components/VerticalSpace";
 import { TextInput } from "@arc-ui/components/TextInput";
 import { FormControl } from "@arc-ui/components/FormControl";
 import { ButtonV2 } from "@arc-ui/components/ButtonV2";
-import { Alert } from "@arc-ui/components/Alert";
-import { Badge } from "@arc-ui/components/Badge";
 import { Spinner } from "@arc-ui/components/Spinner";
 import { Rule } from "@arc-ui/components/Rule";
 import { Icon } from "@arc-ui/components/Icon";
@@ -35,7 +33,7 @@ import { BtIconSearch } from "@arc-ui/icons/BtIconSearch";
 import { BtIconInfo } from "@arc-ui/icons/BtIconInfo";
 
 /* ── Types ──────────────────────────────────────────────────── */
-type PageState = "form" | "loading" | "submitted";
+type PageState = "form" | "loading";
 
 interface BillingContact {
   id: string;
@@ -262,64 +260,11 @@ const ContactForm = ({
   </div>
 );
 
-/* ── Submitted read-only view ───────────────────────────────── */
-const SubmittedView = ({
-  contacts,
-  accountNumber,
-  onEdit,
-  onDone,
-}: {
-  contacts: BillingContact[];
-  accountNumber: string;
-  onEdit: () => void;
-  onDone: () => void;
-}) => (
-  <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <Heading level="2" size="m">Billing details</Heading>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
-          <Badge state="success">Account created</Badge>
-          <Text size="s" tone="supporting">Account number: <strong>{accountNumber}</strong></Text>
-        </div>
-      </div>
-      <div style={{ display: "flex", gap: "8px" }}>
-        <ButtonV2 label="Edit billing details" buttonStyle="secondary" size="m" onClick={onEdit} />
-        <ButtonV2 label="Back to dashboard" buttonStyle="primary" size="m" icon={BtIconArrowRight} iconPosition="afterText" onClick={onDone} />
-      </div>
-    </div>
-
-    <Alert
-      heading="Billing account active"
-      headingLevel="3"
-      description={`Your billing account ${accountNumber} has been created. Invoices will be sent to the contacts listed below.`}
-    />
-
-    {contacts.map((c, i) => (
-      <div key={c.id} style={{ background: "#f7f7f7", borderRadius: "16px", padding: "24px", display: "flex", flexDirection: "column", gap: "12px" }}>
-        <Text size="s" tone="muted" elementType="p"><strong>Billing contact {i + 1}</strong></Text>
-        {[
-          { label: "Contact name", value: c.contactName },
-          { label: "Phone number", value: c.phoneNumber },
-          { label: "Address", value: [c.buildingStreet, c.town, c.county, c.postcode].filter(Boolean).join(", ") },
-        ].map((row, j, arr) => (
-          <div key={row.label}>
-            <Text size="s" tone="muted" elementType="p">{row.label}</Text>
-            <Text size="m" elementType="p"><strong>{row.value || "—"}</strong></Text>
-            {j < arr.length - 1 && <div style={{ height: "1px", background: "#d9d9d9", marginTop: "12px" }} />}
-          </div>
-        ))}
-      </div>
-    ))}
-  </div>
-);
-
 /* ── Main page ──────────────────────────────────────────────── */
 export const AddBillingPage = ({ onBack, onSubmitted }: AddBillingPageProps) => {
   const [pageState, setPageState] = useState<PageState>("form");
   const [contacts, setContacts] = useState<BillingContact[]>([blankContact("1")]);
   const [allErrors, setAllErrors] = useState<Record<string, ContactErrors>>({});
-  const [accountNumber, setAccountNumber] = useState("");
 
   const navItems: NavigationHeaderNavLinkItem[] = [
     { type: "link", text: "Dashboard", href: "#", onClick: (e) => { e.preventDefault(); onBack(); } },
@@ -385,8 +330,7 @@ export const AddBillingPage = ({ onBack, onSubmitted }: AddBillingPageProps) => 
     setPageState("loading");
     const generated = `BTA-${Math.floor(100000 + Math.random() * 900000)}`;
     setTimeout(() => {
-      setAccountNumber(generated);
-      setPageState("submitted");
+      onSubmitted(generated);
     }, 3000);
   };
 
@@ -445,8 +389,11 @@ export const AddBillingPage = ({ onBack, onSubmitted }: AddBillingPageProps) => 
             padding: "32px", boxShadow: "0px 0px 32px 0px rgba(0,0,0,0.08)",
             display: "flex", flexDirection: "column", gap: "40px", boxSizing: "border-box",
           }}>
-            {pageState === "submitted" ? (
-              <SubmittedView contacts={contacts} accountNumber={accountNumber} onEdit={() => setPageState("form")} onDone={() => onSubmitted(accountNumber)} />
+            {pageState === "loading" ? (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px", padding: "64px 32px" }}>
+                <Spinner size="m" />
+                <Text size="m" tone="supporting">Creating your billing account…</Text>
+              </div>
             ) : (
               <>
                 {/* Form heading */}
@@ -466,7 +413,7 @@ export const AddBillingPage = ({ onBack, onSubmitted }: AddBillingPageProps) => 
                       contact={contact}
                       index={i}
                       errors={allErrors[contact.id] ?? {}}
-                      isLoading={pageState === "loading"}
+                      isLoading={false}
                       canRemove={contacts.length > 1}
                       onChange={(field, value) => updateContact(contact.id, field, value)}
                       onRemove={() => removeContact(contact.id)}
@@ -491,23 +438,14 @@ export const AddBillingPage = ({ onBack, onSubmitted }: AddBillingPageProps) => 
                   </div>
                 )}
 
-                {/* Loading state */}
-                {pageState === "loading" && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", background: "#f7f7f7", borderRadius: "12px" }}>
-                    <Spinner size="m" />
-                    <Text size="m" tone="supporting">Creating your billing account…</Text>
-                  </div>
-                )}
-
                 {/* CTA row */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
                   <ButtonV2 label="Back" buttonStyle="tertiary" size="m" onClick={onBack} />
                   <ButtonV2
-                    label={pageState === "loading" ? "Creating billing account…" : "Submit billing details"}
+                    label="Submit billing details"
                     buttonStyle="primary"
                     size="m"
-                    isLoading={pageState === "loading"}
-                    icon={pageState === "loading" ? undefined : BtIconArrowRight}
+                    icon={BtIconArrowRight}
                     iconPosition="afterText"
                     onClick={handleSubmit}
                   />

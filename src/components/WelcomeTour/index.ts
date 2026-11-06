@@ -1,2 +1,2 @@
-export { WelcomeTourContent, default } from './WelcomeTourContent';
-export type { WelcomeTourContentProps } from './WelcomeTourContent';
+export { WelcomeTourContent } from './WelcomeTourContent';
+export type { WelcomeTourContentProps, TourDestination } from './WelcomeTourContent';
