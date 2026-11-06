@@ -205,6 +205,8 @@ export function initWelcomeTour(root: HTMLElement, uid: string): () => void {
       else tl.from(el, { scaleY: 0, scaleX: kind === 'pop' ? 0 : 1, opacity: 0, transformOrigin: '50% 100%', duration: 0.45, ease: 'back.out(1.6)' }, at);
     });
     tl.from(t1.chars, { ...charsIn, duration: 0.8 }, 2.5)
+      // Exit t1 before s1 enters
+      .to(t1.chars, { yPercent: -110, opacity: 0, stagger: 0.01, duration: 0.4 }, T(3.2))
       // Part 2 — the cable runs underneath the street and into the office block
       .from(street.cable, { drawSVG: 0, duration: 3.3 }, T(0.3))
       .from(street.joint, { scale: 0, opacity: 0, transformOrigin: '50% 50%', duration: 0.3 }, T(2.7))
@@ -217,7 +219,7 @@ export function initWelcomeTour(root: HTMLElement, uid: string): () => void {
       .to(street.rings, { scale: 1, opacity: 1, duration: 0.45, stagger: 0.2, ease: 'back.out(2)' }, T(6.5))
       .to(street.rings, { opacity: 0.35, duration: 0.25, stagger: 0.2, yoyo: true, repeat: 1 }, T(7.0))
       // Part 4 — through the window into the office, then onto the handset
-      .to([t1.chars, s2.chars], { yPercent: -110, opacity: 0, stagger: 0.006, duration: 0.4 }, T(7.6))
+      .to(s2.chars, { yPercent: -110, opacity: 0, stagger: 0.006, duration: 0.4 }, T(7.6))
       .to(street.rings, { opacity: 0, duration: 0.3 }, T(7.6))
       .to(officeSvg, { opacity: 1, duration: 0.4 }, T(7.9))
       .to(streetSvg, { opacity: 0, duration: 0.05 }, T(9.1))
